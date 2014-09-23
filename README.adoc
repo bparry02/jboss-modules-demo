@@ -1,0 +1,130 @@
+= JBoss EAP Modules
+:toc: left
+:toclevels: 4
+:numbered:
+:source-highlighter: coderay
+:icons: font
+
+A step-by-step walkthrough of some of the capabilies of JBoss Modules in Red Hat Enterprise Application Platform 6.3 (also applies to JBoss AS 7 and Wildfly 8).
+
+== Prerequisites
+
+. JBoss EAP 6.3 is installed and configured to use standalone.xml (the default)
+. Optionally, JBoss Developer Studio is installed
+
+== Simple application with dependencies bundled
+
+. Deploy the Helloworld quickstart
+
+ $ cd helloworld
+ $ mvn clean package jboss-as:deploy
+
+. The Helloworld quickstart does not contain any dependencies on third-party libraries
+
+TIP: TODO: verify with module logging
+
+TIP: TODO: Bundle a dependency
+
+== Application bundles jar that JBoss provides as module
+
+. Add dependency to joda-time:1.6.2 (same as version included as JBoss module) with compile scope. This will include the jar in the war
+
+. Add code to the servlet to display the current month
+
+. Test. Should be successful. Verify the jar exists in the war.
+
+ $ mvn clean package
+ $ ls target/jboss-helloworld/WEB-INF/lib/
+ joda-time-1.6.2.jar
+
+As you can see, even though JBoss contains a module for joda-time, JBoss uses the version included in the WAR since no dependency is declared on the static module.
+
+TIP: TODO: probably want to see the module loader output here
+
+== Application depends on module
+
+. Change the scope of the joda-time maven dependency to `provided`.
+
+. Deploy the application. It should fail.
++
+----
+22:12:00,743 ERROR [org.jboss.msc.service.fail] (MSC service thread 1-9) MSC000001: Failed to start service jboss.deployment.unit."jboss-helloworld.war".POST_MODULE: org.jboss.msc.service.StartException in service jboss.deployment.unit."jboss-helloworld.war".POST_MODULE: JBAS018733: Failed to process phase POST_MODULE of deployment "jboss-helloworld.war"
+...
+Caused by: java.lang.ClassNotFoundException: org.joda.time.LocalDate from [Module "deployment.jboss-helloworld.war:main" from Service Module Loader]
+----
+
+. Add a `jboss-deployment-structure.xml` that specifies a dependency on the joda-time module.
++
+[source,xml]
+.src/main/webapp/WEB-INF/jboss-deployment-structure.xml
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+    <deployment>
+        <dependencies>
+            <module name="org.joda.time" />
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>
+----
++
+NOTE: joda time is `unsupported`. This may be a confusing example to start with
+.
++
+TIP: TODO: capture unsupported log message
++
+TIP: TODO: create shell script that prints all modules, public, private, unsupported
+
+== Application depends on custom module
+Since joda-time is unsupported, we should deploy our own module--that we will maintain--and depend on it instead. In fact, it is a good practice to create and maintain any static modules you may need, so you can upgrade with less risk. This applies to most third-party modules. However, if an application depends on container-provided functionality, like JBoss Logging, it should depend on the JBoss-provided module.
+
+. Let's upgrade our dependency on joda-time to the latest version (`2.4` at the time of this writing). That way we can use new features, such as `MonthDay`. Change the version of joda-time in the `pom.xml` to 2.4. Leave the scope as `provided`.
+
+. Creat a method that uses the `MonthDay` class, and returns a `String` value that will be displayed.
+
+. Deploy the application and test. The application deploys, but a `ClassNotFoundException` is thrown:
++
+----
+java.lang.ClassNotFoundException: org.joda.time.MonthDay from [Module "deployment.jboss-helloworld.war:main" from Service Module Loader]
+org.jboss.modules.ModuleClassLoader.findClass(ModuleClassLoader.java:213)
+----
+
+. The application is still depending on the JBoss-provided joda-time module, which is an older version without the `MonthDay` class. There are two simple ways we can solve this problem:
+
+.. Package the joda-time jar within the WAR, and remove the dependency on the container-provided module.
+.. Create a custom static module and change the jboss-deployment-structure.xml to depend on that. Let's do this.
+
+. Create a directory for the module.
+ 
+ $ mkdir $EAP_HOME/modules/org/joda/time/2.4
+
+. Create a module.xml file.
++
+[source,xml]
+.$EAP_HOME/modules/org/joda/time/2.4/module.xml
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.3" name="org.joda.time" slot="2.4">
+    <resources>
+        <resource-root path="joda-time-2.4.jar"/>
+    </resources>
+</module>
+----
+
+. Use Maven to resolve and copy the dependencies to the `target` folder, and copy `joda-time-2.4.jar` to the module directory.
+
+ $ mvn dependency:copy-dependencies
+ $ cp target/dependency/joda-time-2.4.jar $EAP_HOME/modules/org/joda/time/2.4/
+
+. Update the `jboss-deployment-structure.xml` to use the correct module and slot.
++
+[source,xml]
+----
+<dependencies>
+    <module name="org.joda.time" slot="2.4" />
+</dependencies>
+----
+
+. Deploy and test. The test is successful! Notice that no warnings were printed in the logs,
+
+NOTE: We can choose any name for the module, slot, or directory within `modules`. By convention, we name the module similarly to the package or Maven coordinates. The slot name we use here is the version, since a main module for joda-time already exists (with the same name).
