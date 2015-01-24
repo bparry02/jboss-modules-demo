@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+	<sub-deployment name="jboss-helloworld.war">
+		
+		<!-- By default, a dependency on the EAR's lib directory will be provided.
+		     The EAR parent module must be explicitly excluded, or our changes will have no effect.  -->
+		<exclusions>
+			<module name="deployment.application-ear.ear"/>
+		</exclusions>
+		
+		<!-- We want to depend on the rest of the classes in the EAR's lib,
+		     so add a dependency on the EAR parent module, but exclude the class/package
+		     causing problems. -->
+		<dependencies>
+			<module name="deployment.application-ear.ear">
+				<imports>
+					<exclude path="org/apache/commons/lang3"/>
+				</imports>
+			</module>
+		</dependencies>
+		
+	</sub-deployment>
+</jboss-deployment-structure>
