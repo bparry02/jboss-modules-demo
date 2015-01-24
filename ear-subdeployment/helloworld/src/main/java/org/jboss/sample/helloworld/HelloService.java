@@ -17,6 +17,7 @@
 package org.jboss.sample.helloworld;
 
 import org.jboss.sample.common.utils.Util;
+import org.jboss.sample.helloworld.util.UiClassUtils;
 
 /**
  * A simple CDI service which is able to say hello to someone
@@ -28,6 +29,11 @@ public class HelloService {
 
     String createHelloMessage(String name) {
         return "Hello " + Util.createHeader(name) + "!";
+    }
+
+    String createClassMessage() {
+        return "Search for commons-lang3 StringUtils: "
+                + UiClassUtils.findClass("org.apache.commons.lang3.StringUtils");
     }
 
 }

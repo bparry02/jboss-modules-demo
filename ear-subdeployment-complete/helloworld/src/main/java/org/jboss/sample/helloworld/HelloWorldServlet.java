@@ -26,8 +26,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jboss.sample.helloworld.util.UiClassUtils;
-
 /**
  * <p>
  * A simple servlet taking advantage of features added in 3.0.
@@ -58,7 +56,7 @@ public class HelloWorldServlet extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         writer.println(PAGE_HEADER);
         writer.println("<h1>" + helloService.createHelloMessage("World") + "</h1>");
-        writer.println("Search for commons-lang3 StringUtils: "+ UiClassUtils.findClass("org.apache.commons.lang3.StringUtils"));
+        writer.println(helloService.createClassMessage());
         writer.println(PAGE_FOOTER);
         writer.close();
     }
