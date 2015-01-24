@@ -1,4 +1,4 @@
-package org.jboss.as.quickstarts.helloworld.util;
+package org.jboss.sample.helloworld.util;
 
 public class UiClassUtils {
 
