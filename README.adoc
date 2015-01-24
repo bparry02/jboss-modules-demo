@@ -192,7 +192,7 @@ First, we'll convert our dynamic module to use an EAR. This will allow us to add
 
 NOTE: You can also create dynamic modules with WAR files.
 
-. Create an EAR project for the dynamic module named common-module.
+. Create an EAR project for the dynamic module named common-module. Include common-utils as a dependency.
 +
 [source,xml]
 .pom.xml
@@ -258,3 +258,53 @@ TIP: TODO: Include a second JAR in the module that is used by the application
 TIP: TODO: Create a dependency for the module on a JAR in the EAR that is not used by the application
 
 TIP: TODO: Create a dependency for the module on a JBoss static module that is not used by the application
+
+== Advanced: Limiting class conflicts in EAR Subdeployments
+
+Sometimes more control over the classpath is needed for subdeployments within an EAR (WARs or other JARs). This control can be attained by using the subdeployment elements of the jboss-deployment-structure.xml.
+
+In this walkthrough we will see how to hide EAR/lib JARs that may be causing a conflict with a bundled WAR.
+
+. We begin with an EAR that contains a WAR and some library JARs. The WAR depends on the common-utils.jar. The common-utils.jar depends on commons-lang3.jar for some operation.
+
+. Build and deploy the ear file located at `ear-subdeployment/application-ear/target/application-ear.ear`.
+
+ $ cd ear-subdeployment
+ $ mvn clean package
+
+. The servlet invokes a class in common-utils.jar to display the `Hello ::World::!` header. Below, a message shows that the `org.apache.commons.lang3.StringUtils` class was found on the classpath.
+
+. For illustration purposes, let's decide that having the commons-lang StringUtils class visible to the WAR is undesirable. This can happen if class loading conflicts occur, such as ClassCastExceptions. There are many ways of solving this problem using JBoss Modules, but for this example, let's say both JARs must remain in the EAR's lib directory.
+
+. To solve our classloading issue, we want to hide the commons-lang package from the WAR. To do this we create a jboss-deployment-structure.xml in the EAR's META-INF directory.
++
+[source,xml]
+./application-ear/src/main/application/META-INF/jboss-deployment-structure.xml
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+    <sub-deployment name="jboss-helloworld.war">
+        
+        <!-- By default, a dependency on the EAR's lib directory will be provided.
+             The EAR parent module must be explicitly excluded, or our changes
+             will have no effect.  -->
+        <exclusions>
+            <module name="deployment.application-ear.ear"/>
+        </exclusions>
+        
+        <!-- We want to depend on the rest of the classes in the EAR's lib,
+             so add a dependency on the EAR parent module, but exclude the class/package
+             causing problems. -->
+        <dependencies>
+            <module name="deployment.application-ear.ear">
+                <imports>
+                    <exclude path="org/apache/commons/lang3"/>
+                </imports>
+            </module>
+        </dependencies>
+        
+    </sub-deployment>
+</jboss-deployment-structure>
+----
+
+. Build and deploy the application. Observe that the class search message now displays not found since the StringUtils was not found on the classpath of the WAR. However, the common-utils.jar was still able to invoke StringUtils to create the header.
