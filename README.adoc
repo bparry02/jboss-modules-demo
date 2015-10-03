@@ -10,6 +10,7 @@ A step-by-step walkthrough of some of the capabilies of JBoss Modules in Red Hat
 == Prerequisites
 
 . JBoss EAP 6.3 is installed and configured to use standalone.xml (the default)
+. Maven is installed, and configured to use the https://github.com/jboss-developer/jboss-developer-shared-resources/blob/master/guides/CONFIGURE_MAVEN.md#configure-maven-to-build-and-deploy-the-quickstarts[JBoss Quickstarts]
 . Optionally, JBoss Developer Studio is installed
 
 == Simple application with dependencies bundled
