@@ -28,10 +28,47 @@ TIP: TODO: Bundle a dependency
 == Application bundles jar that JBoss provides as module
 
 . Add dependency to joda-time:1.6.2 (same as version included as JBoss module) with compile scope. This will include the jar in the war
++
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>joda-time</groupId>
+    <artifactId>joda-time</artifactId>
+    <version>1.6.2</version>
+</dependency>
+----
 
 . Add code to the servlet to display the current month
++
+[source,java]
+.HelloWorldServlet.java
+----
+import java.util.Locale;
+import org.joda.time.LocalDate;
 
-. Test. Should be successful. Verify the jar exists in the war.
+    // ... snip ...
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html");
+        PrintWriter writer = resp.getWriter();
+        writer.println(PAGE_HEADER);
+        writer.println("<h1>" + helloService.createHelloMessage("World") + "</h1>");
+        writer.println("Current month is: "+ getMonthText(new LocalDate()));
+        writer.println(PAGE_FOOTER);
+        writer.close();
+    }
+    
+    public String getMonthText(LocalDate date) {
+        return date.monthOfYear().getAsText(Locale.ENGLISH);
+    }
+}
+----
+
+. Test the application. The servlet should display the current month: http://localhost:8080/jboss-helloworld/HelloWorld
+
+. Verify the jar exists in the war.
 
  $ mvn clean package
  $ ls target/jboss-helloworld/WEB-INF/lib/
@@ -44,8 +81,19 @@ TIP: TODO: probably want to see the module loader output here
 == Application depends on module
 
 . Change the scope of the joda-time maven dependency to `provided`.
++
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>joda-time</groupId>
+    <artifactId>joda-time</artifactId>
+    <version>1.6.2</version>
+    <scope>provided</scope>
+</dependency>
+----
 
-. Deploy the application. It should fail.
+. Build and deploy the application. It should fail.
 +
 ----
 22:12:00,743 ERROR [org.jboss.msc.service.fail] (MSC service thread 1-9) MSC000001: Failed to start service jboss.deployment.unit."jboss-helloworld.war".POST_MODULE: org.jboss.msc.service.StartException in service jboss.deployment.unit."jboss-helloworld.war".POST_MODULE: JBAS018733: Failed to process phase POST_MODULE of deployment "jboss-helloworld.war"
@@ -68,10 +116,12 @@ Caused by: java.lang.ClassNotFoundException: org.joda.time.LocalDate from [Modul
 </jboss-deployment-structure>
 ----
 +
-NOTE: joda time is `unsupported`. This may be a confusing example to start with
-.
-+
-TIP: TODO: capture unsupported log message
+[NOTE]
+====
+Joda time is an `unsupported` module. This is for demonstration purposes only. In production you should deploy and maintain your own module instead of depending on any private modules.
+
+ 19:55:04,222 WARN  [org.jboss.as.dependency.unsupported] (MSC service thread 1-2) JBAS015868: Deployment "deployment.jboss-helloworld.war" is using an unsupported module ("org.joda.time:main") which may be changed or removed in future versions without notice.
+====
 +
 TIP: TODO: create shell script that prints all modules, public, private, unsupported
 
@@ -79,8 +129,47 @@ TIP: TODO: create shell script that prints all modules, public, private, unsuppo
 Since joda-time is unsupported, we should deploy our own module--that we will maintain--and depend on it instead. In fact, it is a good practice to create and maintain any static modules you may need, so you can upgrade with less risk. This applies to most third-party modules. However, if an application depends on container-provided functionality, like JBoss Logging, it should depend on the JBoss-provided module.
 
 . Let's upgrade our dependency on joda-time to the latest version (`2.4` at the time of this writing). That way we can use new features, such as `MonthDay`. Change the version of joda-time in the `pom.xml` to 2.4. Leave the scope as `provided`.
++
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>joda-time</groupId>
+    <artifactId>joda-time</artifactId>
+    <version>2.4</version>
+    <scope>provided</scope>
+</dependency>
+----
 
-. Creat a method that uses the `MonthDay` class, and returns a `String` value that will be displayed.
+. Create a method that uses the `MonthDay` class, and returns a `String` value that will be displayed.
++
+[source,java]
+.HelloWorldServlet.java
+----
+import java.util.Locale;
+import org.joda.time.LocalDate;
+
+    // ... snip ...
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html");
+        PrintWriter writer = resp.getWriter();
+        writer.println(PAGE_HEADER);
+        writer.println("<h1>" + helloService.createHelloMessage("World") + "</h1>");
+        writer.println("Current month is: "+ getMonthText(new LocalDate()) + "<br>");
+        writer.println("Abbreviation is: "+ getMonthShortText(new Date()));
+        writer.println(PAGE_FOOTER);
+        writer.close();
+    }
+    
+    public String getMonthShortText(Date date) {
+        return MonthDay.fromDateFields(date).monthOfYear().getAsShortText();
+    }
+
+    // ... snip ...
+}
+----
 
 . Deploy the application and test. The application deploys, but a `ClassNotFoundException` is thrown:
 +
@@ -92,11 +181,11 @@ org.jboss.modules.ModuleClassLoader.findClass(ModuleClassLoader.java:213)
 . The application is still depending on the JBoss-provided joda-time module, which is an older version without the `MonthDay` class. There are two simple ways we can solve this problem:
 
 .. Package the joda-time jar within the WAR, and remove the dependency on the container-provided module.
-.. Create a custom static module and change the jboss-deployment-structure.xml to depend on that. Let's do this.
+.. Create a custom static module and change the jboss-deployment-structure.xml to depend on that.
 
-. Create a directory for the module.
+. Let's choose to create a custom static module. Create a directory for the module.
  
- $ mkdir $EAP_HOME/modules/org/joda/time/2.4
+ $ mkdir -p $EAP_HOME/modules/org/joda/time/2.4
 
 . Create a module.xml file.
 +
