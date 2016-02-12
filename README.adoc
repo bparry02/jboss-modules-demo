@@ -5,11 +5,11 @@
 :source-highlighter: coderay
 :icons: font
 
-A step-by-step walkthrough of some of the capabilies of JBoss Modules in Red Hat Enterprise Application Platform 6.3 (also applies to JBoss AS 7 and Wildfly 8).
+A step-by-step walkthrough of some of the capabilies of JBoss Modules in Red Hat Enterprise Application Platform 6.4 (also applies to JBoss AS 7 and Wildfly 8+).
 
 == Prerequisites
 
-. JBoss EAP 6.3 is installed and configured to use standalone.xml (the default)
+. JBoss EAP 6.4 is installed and configured to use standalone.xml (the default)
 . Maven is installed, and configured to use the https://github.com/jboss-developer/jboss-developer-shared-resources/blob/master/guides/CONFIGURE_MAVEN.md#configure-maven-to-build-and-deploy-the-quickstarts[JBoss Quickstarts]
 . Optionally, JBoss Developer Studio is installed
 
