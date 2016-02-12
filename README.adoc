@@ -124,7 +124,19 @@ Joda time is an `unsupported` module. This is for demonstration purposes only. I
  19:55:04,222 WARN  [org.jboss.as.dependency.unsupported] (MSC service thread 1-2) JBAS015868: Deployment "deployment.jboss-helloworld.war" is using an unsupported module ("org.joda.time:main") which may be changed or removed in future versions without notice.
 ====
 +
-TIP: TODO: create shell script that prints all modules, public, private, unsupported
+[TIP]
+====
+You can use the following commands to see which modules are marked public, private, or unsupported:
+
+----
+cd $JBOSS_HOME/modules/system/layers/base
+
+# print private and unsupported modules
+find . -name module.xml | xargs grep -l property | sort
+
+# print public modules
+find . -name module.xml | xargs grep -L property | sort
+====
 
 == Application depends on custom module
 Since joda-time is unsupported, we should deploy our own module--that we will maintain--and depend on it instead. In fact, it is a good practice to create and maintain any static modules you may need, so you can upgrade with less risk. This applies to most third-party modules. However, if an application depends on container-provided functionality, like JBoss Logging, it should depend on the JBoss-provided module.
