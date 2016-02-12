@@ -28,6 +28,8 @@ TIP: TODO: Bundle a dependency
 
 == Application bundles jar that JBoss provides as module
 
+The modular class loading in JBoss EAP means that most JARs included in the JBoss installation are not automatically added to the application's classpath. This section demonstrates that an application can include a JAR part of the JBoss installation and there will be no class conflicts.
+
 . Add dependency to joda-time:1.6.2 (same as version included as JBoss module) with compile scope. This will include the jar in the war
 +
 [source,xml]
@@ -74,7 +76,7 @@ import org.joda.time.LocalDate;
  $ mvn clean package
  $ ls target/jboss-helloworld/WEB-INF/lib/
  joda-time-1.6.2.jar
-
++
 As you can see, even though JBoss contains a module for joda-time, JBoss uses the version included in the WAR since no dependency is declared on the static module.
 
 TIP: TODO: probably want to see the module loader output here
@@ -378,7 +380,7 @@ In this walkthrough we will see how to hide EAR/lib JARs that may be causing a c
 
 . For illustration purposes, let's decide that having the commons-lang StringUtils class visible to the WAR is undesirable. This can happen if class loading conflicts occur, such as ClassCastExceptions. There are many ways of solving this problem using JBoss Modules, but for this example, let's say both JARs must remain in the EAR's lib directory.
 
-. To solve our classloading issue, we want to hide the commons-lang package from the WAR. To do this we create a jboss-deployment-structure.xml in the EAR's META-INF directory.
+. To solve our class loading issue, we want to hide the commons-lang package from the WAR. To do this we create a jboss-deployment-structure.xml in the EAR's META-INF directory.
 +
 [source,xml]
 ./application-ear/src/main/application/META-INF/jboss-deployment-structure.xml
