@@ -1,4 +1,4 @@
-= JBoss EAP Modules by Example
+= JBoss Modules with EAP by Example
 :toc: left
 :toclevels: 4
 :numbered:
@@ -140,7 +140,7 @@ find . -name module.xml | xargs grep -l property | sort
 find . -name module.xml | xargs grep -L property | sort
 ====
 
-== Application depends on custom module
+== Application depends on custom static module
 Since joda-time is unsupported, we should deploy our own module--that we will maintain--and depend on it instead. In fact, it is a good practice to create and maintain any static modules you may need, so you can upgrade with less risk. This applies to most third-party modules. However, if an application depends on container-provided functionality, like JBoss Logging, it should depend on the JBoss-provided module.
 
 . Let's upgrade our dependency on joda-time to the latest version (`2.4` at the time of this writing). That way we can use new features, such as `MonthDay`. Change the version of joda-time in the `pom.xml` to 2.4. Leave the scope as `provided`.
@@ -233,7 +233,7 @@ org.jboss.modules.ModuleClassLoader.findClass(ModuleClassLoader.java:213)
 
 NOTE: We can choose any name for the module, slot, or directory within `modules`. By convention, we name the module similarly to the package or Maven coordinates. The slot name we use here is the version, since a main module for joda-time already exists (with the same name).
 
-== Creating a dynamic module
+== Creating a dynamic module (JAR)
 
 Static modules are good for creating common libraries that can be shared among multiple deployments--especially when those common libraries do not change often. But what if we have common libraries we want to make available but update almost as often as our application? Creating a dynamic module may be the right choice, since we can update it just like any other deployed artifact.
 
@@ -286,7 +286,7 @@ common-utils-1.0.jar common-utils-1.0.jar true       true    OK
 . Congratulations! You have created a dynamic module that is easy to maintain alongside your application.
 
 
-== Creating an advanced dynamic module
+== Creating an advanced dynamic module (EAR)
 
 So we have seen how to create a dynamic module comprised of just a single JAR. But it is also possible to create a dynamic module comprised of multiple JARs, as well as one that depends on other modules. This can be useful if we have several JARs we want to expose to our application as a unit (create a module), that also will change often alongside our application (choose a dynamic module over static).
 
