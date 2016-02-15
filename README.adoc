@@ -109,8 +109,8 @@ Caused by: java.lang.ClassNotFoundException: org.joda.time.LocalDate from [Modul
 This is expected becuase provided scope tells Maven not to include the dependency in the WAR, because it will be provided at runtime by some other means. We can verify the JAR is not included by checking the WEB-INF/lib directory. It is not found since this WAR no longer includes any dependencies.
 +
 ----
-ls target/jboss-helloworld/WEB-INF/lib
-ls: cannot access target/jboss-helloworld/WEB-INF/lib/: No such file or directory
+$ ls target/jboss-helloworld/WEB-INF/lib
+$ ls: cannot access target/jboss-helloworld/WEB-INF/lib/: No such file or directory
 ----
 
 . Add a `jboss-deployment-structure.xml` that specifies a dependency on the joda-time module.
@@ -140,13 +140,13 @@ Joda time is an `unsupported` module. This is for demonstration purposes only. I
 You can use the following commands to see which modules are marked public, private, or unsupported:
 
 ----
-cd $JBOSS_HOME/modules/system/layers/base
+$ cd $JBOSS_HOME/modules/system/layers/base
 
 # print private and unsupported modules
-find . -name module.xml | xargs grep -l property | sort
+$ find . -name module.xml | xargs grep -l property | sort
 
 # print public modules
-find . -name module.xml | xargs grep -L property | sort
+$ find . -name module.xml | xargs grep -L property | sort
 ----
 ====
 
@@ -286,9 +286,9 @@ To create a single JAR as a dynamic module, simply deploy using the CLI or the d
 +
 To deploy the JAR using the CLI, use the following:
 +
- cd common-utils
- mvn clean install
- $JBOSS_HOME/bin/jboss-cli.sh -c "deploy target/common-utils-1.0.jar"
+ $ cd common-utils
+ $ mvn clean install
+ $ $JBOSS_HOME/bin/jboss-cli.sh -c "deploy target/common-utils-1.0.jar"
 
 . Verify that the deployment was successful:
 +
@@ -315,8 +315,8 @@ common-utils-1.0.jar common-utils-1.0.jar true       true    OK
 
 . Build, deploy, and test the helloworld application. The deployment should be successful and "WORLD" should be capitalized.
 +
- cd helloworld
- mvn clean package jboss-as:deploy
+ $ cd helloworld
+ $ mvn clean package jboss-as:deploy
 
 . Congratulations! You have created a dynamic module that is easy to maintain alongside your application.
 +
@@ -341,8 +341,8 @@ NOTE: You can also create dynamic modules with WAR files.
 
 . Create an EAR project for the dynamic module named common-module.
 +
- cd dynamic-ear
- mkdir common-module
+ $ cd dynamic-ear
+ $ mkdir common-module
 
 . Create a pom for the common-module project. Include common-utils as a dependency.
 +
@@ -388,9 +388,9 @@ NOTE: You can also create dynamic modules with WAR files.
 
 . Build and deploy common-module-1.0.ear
 +
- cd common-module
- mvn clean package
- $JBOSS_HOME/bin/jboss-cli.sh -c "deploy target/common-module.ear"
+ $ cd common-module
+ $ mvn clean package
+ $ $JBOSS_HOME/bin/jboss-cli.sh -c "deploy target/common-module.ear"
 
 . Modify the jboss-deployment-structure.xml of helloworld to point to the EAR
 +
@@ -411,8 +411,8 @@ NOTE: Remember, if the `<finalName>` attribute is not specified in the EAR's pom
 
 . Build and deploy the helloworld application. The application should work as expected.
 +
- cd helloworld
- mvn clean package jboss-as:deploy
+ $ cd helloworld
+ $ mvn clean package jboss-as:deploy
 
 . So far, packaging our dynamic module as an EAR is not providing much benefit. However that will change, as we will see next.
 
