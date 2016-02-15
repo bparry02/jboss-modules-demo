@@ -65,6 +65,7 @@ import org.joda.time.LocalDate;
         writer.close();
     }
     
+    // invoke the joda-time library to demonstrate class loading with JBoss Modules
     public String getMonthText(LocalDate date) {
         return date.monthOfYear().getAsText(Locale.ENGLISH);
     }
@@ -192,6 +193,7 @@ import org.joda.time.MonthDay;
         writer.close();
     }
     
+    // invoke the joda-time library to demonstrate class loading with JBoss Modules
     public String getMonthShortText(Date date) {
         return MonthDay.fromDateFields(date).monthOfYear().getAsShortText();
     }
