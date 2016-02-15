@@ -147,6 +147,7 @@ find . -name module.xml | xargs grep -l property | sort
 
 # print public modules
 find . -name module.xml | xargs grep -L property | sort
+----
 ====
 
 . Build, deploy, and test the application. It should be successful. The `jboss-deployment-structure.xml` file specifies that the classes contained in the `org.joda.time` static module be available to the application at runtime. JBoss will not provide access to this module unless it is specified in the jboss-deployment-structure.xml.
@@ -252,15 +253,52 @@ NOTE: We can choose any name for the module, slot, or directory within `modules`
 
 == Creating a dynamic module (JAR)
 
-Static modules are good for creating common libraries that can be shared among multiple deployments--especially when those common libraries do not change often. But what if we have common libraries we want to make available but update almost as often as our application? Creating a dynamic module may be the right choice, since we can update it just like any other deployed artifact.
+Static modules are good for creating common libraries that can be shared among multiple deployments--especially when those common libraries do not change often. But what if we have common libraries we want to make available, but also update as often as our application? Creating a dynamic module may be the right choice, since we can update it just like any other deployed artifact.
 
-. Open the helloworld application. 
-
-. Add a dependency on the common library: org.jboss.sample:common-utils:1.0. Set the scope to `provided`.
+. Open the dynamic/helloworld/pom.xml file, and add a dependency on the common-utils library. This project is located at dynamic/common-utils. Set the scope to `provided`.
++
+[source,xml]
+.dynamic/helloworld/pom.xml
+----
+<dependency>
+    <groupId>org.jboss.sample</groupId>
+    <artifactId>common-utils</artifactId>
+    <version>1.0</version>
+    <scope>provided</scope>
+</dependency>
+----
++
+NOTE: We are using a scope of `provided` for this library because it will be provided as a dynamic module. We will create this module shortly.
 
 . Change the HelloService to use a function provided in the common-utils jar.
++
+[source,java]
+.src/main/java/org/jboss/as/quickstarts/helloworld/HelloService.java
+----
+String createHelloMessage(String name) {
+    return "Hello " + Util.capitalize(name) + "!";
+}
+----
 
-. If we were to deploy the jboss-helloworld.war right now it would fail, since the common-utils JAR is marked as provided and won't be included in the war. We need to create a dynamic module that the application can depend on. Let's start with a jboss-deployment-structure.xml for the application.
+. If we were to deploy the jboss-helloworld.war right now it would fail, since the common-utils JAR is marked as provided and won't be included in the war. We need to create a dynamic module that the application can list in its jboss-deployment-structure.xml.
++
+To create a single JAR as a dynamic module, simply deploy using the CLI or the deployments folder. The module name is derived from the artifact's name.
++
+To deploy the JAR using the CLI, use the following:
++
+ cd common-utils
+ mvn clean install
+ $JBOSS_HOME/bin/jboss-cli.sh -c "deploy target/common-utils-1.0.jar"
+
+. Verify that the deployment was successful:
++
+----
+$JBOSS_HOME/bin/jboss-cli.sh -c deployment-info
+NAME                 RUNTIME-NAME         PERSISTENT ENABLED STATUS               
+common-utils-1.0.jar common-utils-1.0.jar true       true    OK   
+----
+
+. Now let's add a jboss-deployment-structure.xml for the helloworld application.
 +
 [source,xml]
 .src/main/webapp/WEB-INF/jboss-deployment-structure.xml
@@ -275,33 +313,19 @@ Static modules are good for creating common libraries that can be shared among m
 </jboss-deployment-structure>
 ----
 
-. Deploy the application. It will fail, saying that a dependency is missing.
+. Build, deploy, and test the helloworld application. The deployment should be successful and "WORLD" should be capitalized.
 +
-----
-JBAS014775:    New missing/unsatisfied dependencies:
-service jboss.module.service."deployment.jboss-helloworld.war".main (missing) dependents: [service jboss.deployment.unit."jboss-helloworld.war".FIRST_MODULE_USE] 
-
-service jboss.module.spec.service."deployment.common-utils-1.0.jar".main (missing) dependents: [service jboss.module.resolve.phase."deployment.jboss-helloworld.war".main.1, service jboss.module.service."deployment.jboss-helloworld.war".main] 
-
-service jboss.module.spec.service."deployment.jboss-helloworld.war".main (missing) dependents: [service jboss.module.service."deployment.jboss-helloworld.war".main]
-----
-
-. Let's deploy our common library. We can do this by using the JBoss CLI.
-+
- $JBOSS_HOME/bin/jboss-cli.sh -c "deploy common-utils/target/common-utils-1.0.jar"
-
-. Verify that the deployment was successful:
-+
-----
-$JBOSS_HOME/bin/jboss-cli.sh -c deployment-info
-NAME                 RUNTIME-NAME         PERSISTENT ENABLED STATUS               
-common-utils-1.0.jar common-utils-1.0.jar true       true    OK   
-----
-
-. Deploy the jboss-helloworld.war and test. It will now be successful.
+ cd helloworld
+ mvn clean package jboss-as:deploy
 
 . Congratulations! You have created a dynamic module that is easy to maintain alongside your application.
++
+[WARNING]
+====
+If the deployment fails, you may get a message like the one below:
 
+ service jboss.module.spec.service."deployment.common-utils-1.0.jar".main (missing)...
+====
 
 == Creating an advanced dynamic module (EAR)
 
