@@ -329,18 +329,25 @@ If the deployment fails, you may get a message like the one below:
 
 == Creating an advanced dynamic module (EAR)
 
-So we have seen how to create a dynamic module comprised of just a single JAR. But it is also possible to create a dynamic module comprised of multiple JARs, as well as one that depends on other modules. This can be useful if we have several JARs we want to expose to our application as a unit (create a module), that also will change often alongside our application (choose a dynamic module over static).
+So we have seen how to create a dynamic module comprised of just a single JAR. But it is also possible to create a dynamic module comprised of multiple JARs, as well as one that depends on other modules. This can be useful if we have several JARs we want to expose to our application as a unit (a module), that also will change often alongside our application (choosing a dynamic module over static).
 
-Let's pick up where we left off with the previous example. We have a WAR, jboss-helloworld.war, that depends on a dynamic module, common-utils-1.0.jar. The JAR is deployed by itself to JBoss EAP. The WAR contains a jboss-deployment-structure.xml that lists a dependency on the dynamic module named `deployment.common-utils-1.0.jar`.
+Let's pick up where we left off with the previous example, or you can start with the projects in the dynamic-ear folder. We have a WAR, jboss-helloworld.war, that depends on a dynamic module, common-utils-1.0.jar. The JAR is deployed by itself to JBoss EAP. The WAR contains a jboss-deployment-structure.xml that lists a dependency on the dynamic module named `deployment.common-utils-1.0.jar`.
+
+=== Create an EAR dynamic module
 
 First, we'll convert our dynamic module to use an EAR. This will allow us to add to the dynamic module in the following steps.
 
 NOTE: You can also create dynamic modules with WAR files.
 
-. Create an EAR project for the dynamic module named common-module. Include common-utils as a dependency.
+. Create an EAR project for the dynamic module named common-module.
++
+ cd dynamic-ear
+ mkdir common-module
+
+. Create a pom for the common-module project. Include common-utils as a dependency.
 +
 [source,xml]
-.pom.xml
+.dynamic-ear/common-module/pom.xml
 ----
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -377,12 +384,18 @@ NOTE: You can also create dynamic modules with WAR files.
 </project>
 ----
 
+. If necessary, build and install common-utils.
+
 . Build and deploy common-module-1.0.ear
++
+ cd common-module
+ mvn clean package
+ $JBOSS_HOME/bin/jboss-cli.sh -c "deploy target/common-module.ear"
 
 . Modify the jboss-deployment-structure.xml of helloworld to point to the EAR
 +
 [source,xml]
-.src/main/webapp/WEB-INF/jboss-deployment-structure.xml
+.helloworld/src/main/webapp/WEB-INF/jboss-deployment-structure.xml
 ----
 <?xml version="1.0" encoding="UTF-8"?>
 <jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
@@ -394,9 +407,16 @@ NOTE: You can also create dynamic modules with WAR files.
 </jboss-deployment-structure>
 ----
 +
-NOTE: Remember, if the `<finalName>` attribute is not specified in the EAR's pom.xml, the filename of the module will change each time the version changes. Consider using a `finalName` of `${project.artifactId}` for the ear to make new releases easier. Of course, there are benefits to knowing what the version of an artifact is at a glance.
+NOTE: Remember, if the `<finalName>` attribute is not specified in the EAR's pom.xml, the filename of the module will change each time the version changes. Consider using a `finalName` of `${project.artifactId}` for the ear to make new releases easier.
 
-. Build and deploy the helloworld application. The application works as expected. So far, packaging our dynamic module as an EAR is not providing any benefit. However that will change, as we will see next.
+. Build and deploy the helloworld application. The application should work as expected.
++
+ cd helloworld
+ mvn clean package jboss-as:deploy
+
+. So far, packaging our dynamic module as an EAR is not providing much benefit. However that will change, as we will see next.
+
+=== Create an EAR dynamic module including multiple JARs
 
 TIP: TODO: Include a second JAR in the module that is used by the application
 
