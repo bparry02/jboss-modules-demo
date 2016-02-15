@@ -426,25 +426,26 @@ TIP: TODO: Create a dependency for the module on a JBoss static module that is n
 
 == Advanced: Limiting class conflicts in EAR Subdeployments
 
-Sometimes more control over the classpath is needed for subdeployments within an EAR (WARs or other JARs). This control can be attained by using the subdeployment elements of the jboss-deployment-structure.xml.
+Sometimes more control over the classpath is needed for subdeployments (WARs or JARs) within an EAR. This control can be attained by using the subdeployment element of the jboss-deployment-structure.xml.
 
 In this walkthrough we will see how to hide EAR/lib JARs that may be causing a conflict with a bundled WAR.
 
 . We begin with an EAR that contains a WAR and some library JARs. The WAR depends on the common-utils.jar. The common-utils.jar depends on commons-lang3.jar for some operation.
 
-. Build and deploy the ear file located at `ear-subdeployment/application-ear/target/application-ear.ear`.
+. Build the project and deploy the ear file located at `ear-subdeployment/application-ear/target/application-ear.ear`.
 
  $ cd ear-subdeployment
  $ mvn clean package
+ $ $JBOSS_HOME/bin/jboss-cli.sh -c "deploy application-ear/target/common-module.ear"
 
 . The servlet invokes a class in common-utils.jar to display the `Hello ::World::!` header. Below, a message shows that the `org.apache.commons.lang3.StringUtils` class was found on the classpath.
 
 . For illustration purposes, let's decide that having the commons-lang StringUtils class visible to the WAR is undesirable. This can happen if class loading conflicts occur, such as ClassCastExceptions. There are many ways of solving this problem using JBoss Modules, but for this example, let's say both JARs must remain in the EAR's lib directory.
 
-. To solve our class loading issue, we want to hide the commons-lang package from the WAR. To do this we create a jboss-deployment-structure.xml in the EAR's META-INF directory.
+. To solve our class loading issue, we want to hide the `org.apache.commons.lang3` package from the WAR. To do this we create a jboss-deployment-structure.xml in the EAR's META-INF directory.
 +
 [source,xml]
-./application-ear/src/main/application/META-INF/jboss-deployment-structure.xml
+.ear-subdeployment/application-ear/src/main/application/META-INF/jboss-deployment-structure.xml
 ----
 <?xml version="1.0" encoding="UTF-8"?>
 <jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
@@ -458,8 +459,8 @@ In this walkthrough we will see how to hide EAR/lib JARs that may be causing a c
         </exclusions>
         
         <!-- We want to depend on the rest of the classes in the EAR's lib,
-             so add a dependency on the EAR parent module, but exclude the class/package
-             causing problems. -->
+             so re-add a dependency on the EAR parent module,
+             but exclude the class/package causing problems. -->
         <dependencies>
             <module name="deployment.application-ear.ear">
                 <imports>

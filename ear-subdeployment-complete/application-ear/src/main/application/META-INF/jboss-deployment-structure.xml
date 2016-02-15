@@ -9,8 +9,8 @@
 		</exclusions>
 		
 		<!-- We want to depend on the rest of the classes in the EAR's lib,
-		     so add a dependency on the EAR parent module, but exclude the class/package
-		     causing problems. -->
+		     so re-add a dependency on the EAR parent module,
+		     but exclude the class/package causing problems. -->
 		<dependencies>
 			<module name="deployment.application-ear.ear">
 				<imports>
