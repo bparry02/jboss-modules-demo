@@ -5,10 +5,10 @@
 
 Static modules are good for creating common libraries that can be shared among multiple deployments--especially when those common libraries do not change often. But what if we have common libraries we want to make available, but also update as often as our application? Creating a dynamic module may be the right choice, since we can update it just like any other deployed artifact.
 
-. Open the dynamic/helloworld/pom.xml file, and add a dependency on the common-utils library. This project is located at dynamic/common-utils. Set the scope to `provided`.
+. Open the initial/helloworld/pom.xml file, and add a dependency on the common-utils library. This project is located at initial/common-utils. Set the scope to `provided`.
 +
 [source,xml]
-.dynamic/helloworld/pom.xml
+.initial/helloworld/pom.xml
 ----
 <dependency>
     <groupId>org.jboss.sample</groupId>
@@ -23,7 +23,7 @@ NOTE: We are using a scope of `provided` for this library because it will be pro
 . Change the HelloService to use a function provided in the common-utils jar.
 +
 [source,java]
-.src/main/java/org/jboss/as/quickstarts/helloworld/HelloService.java
+.initial/helloworld/src/main/java/org/jboss/as/quickstarts/helloworld/HelloService.java
 ----
 String createHelloMessage(String name) {
     return "Hello " + Util.capitalize(name) + "!";
@@ -36,7 +36,7 @@ To create a single JAR as a dynamic module, simply deploy using the CLI or the d
 +
 To deploy the JAR using the CLI, use the following:
 +
- $ cd common-utils
+ $ cd initial/common-utils
  $ mvn clean install
  $ $JBOSS_HOME/bin/jboss-cli.sh -c "deploy target/common-utils-1.0.jar"
 
@@ -51,7 +51,7 @@ common-utils-1.0.jar common-utils-1.0.jar true       true    OK
 . Now let's add a jboss-deployment-structure.xml for the helloworld application.
 +
 [source,xml]
-.src/main/webapp/WEB-INF/jboss-deployment-structure.xml
+.initial/helloworld/src/main/webapp/WEB-INF/jboss-deployment-structure.xml
 ----
 <?xml version="1.0" encoding="UTF-8"?>
 <jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
@@ -65,7 +65,7 @@ common-utils-1.0.jar common-utils-1.0.jar true       true    OK
 
 . Build, deploy, and test the helloworld application. The deployment should be successful and "WORLD" should be capitalized.
 +
- $ cd helloworld
+ $ cd initial/helloworld
  $ mvn clean package jboss-as:deploy
 
 . Congratulations! You have created a dynamic module that is easy to maintain alongside your application.
@@ -76,3 +76,13 @@ If the deployment fails, you may get a message like the one below:
 
  service jboss.module.spec.service."deployment.common-utils-1.0.jar".main (missing)...
 ====
+
+=== Safely updating and redeploying dynamic modules
+
+TIP: TODO: include steps to redeploy dynamic modules and restarting/reloading appropriately
+
+TIP: TODO: same for domain mode
+
+TIP: TODO: add note about finalName and version numbers
+
+
