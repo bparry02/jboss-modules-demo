@@ -13,6 +13,23 @@ A step-by-step walkthrough of how class loading works using JBoss Modules in Red
 . Maven is installed, and configured to use the https://github.com/jboss-developer/jboss-developer-shared-resources/blob/master/guides/CONFIGURE_MAVEN.md#configure-maven-to-build-and-deploy-the-quickstarts[JBoss Quickstarts]
 . Optionally, JBoss Developer Studio is installed
 
+
+
+== Beginner
+* Deploy an application that does not include any 3rd party dependencies
+* Deploy an application that includes a JAR that is also available as a static module
+* Deploy an application that depends on a static module provided by JBoss
+* Deploy an application that depends on a custom static module
+ 
+== Intermediate
+* Deploy an application that depends on a dynamic module (JAR)
+* Deploy an application that depends on an advanced dynamic module (EAR)
+ 
+== Advanced
+* Limit class conflicts in EAR Subdeployments
+
+
+
 == Simple application with no 3rd party dependencies
 
 . Deploy the Helloworld quickstart
