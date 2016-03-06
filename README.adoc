@@ -16,10 +16,13 @@ A step-by-step walkthrough of how class loading works using JBoss Modules in Red
 
 
 == Beginner
-* Deploy an application that does not include any 3rd party dependencies
+* Getting started and understanding module logging
+** Deploy an application that does not depend on any 3rd party libraries
+** (TODO) Deploy an application that includes 3rd party library JARs
+** Deploy an application that depends on a custom static module
 * Deploy an application that includes a JAR that is also available as a static module
 * Deploy an application that depends on a static module provided by JBoss
-* Deploy an application that depends on a custom static module
+* Deploy an application that depends on a custom static module (instead of one provided by JBoss) (TODO may not be necessary once getting started is complete)
  
 == Intermediate
 * Deploy an application that depends on a dynamic module (JAR)
