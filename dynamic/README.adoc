@@ -83,6 +83,14 @@ TIP: TODO: include steps to redeploy dynamic modules and restarting/reloading ap
 
 TIP: TODO: same for domain mode
 
-TIP: TODO: add note about finalName and version numbers
+==== Creating a consistent name for the dynamic module JAR
 
+By default, the dynamic module's name is the filename of the JAR file when it is deployed to JBoss. Since Maven appends the artifact version to the filename, the dynamic module's name will change for each new release. This means all dependent applications must update their respective jboss-deployment-structure.xml file and redeploy as well. 
 
+NOTE: This can be a valid deployment strategy, see the next section Rolling deployments for dynamic modules.
+
+TIP: TODO: Can deployment name/runtime name be specified via cli to change module name?
+
+NOTE: Remember, if the `<finalName>` attribute is not specified in the EAR's pom.xml, the filename of the module will change each time the version changes. Consider using a `finalName` of `${project.artifactId}` for the ear to make new releases easier.
+
+==== Rolling deployments for dynamic modules
