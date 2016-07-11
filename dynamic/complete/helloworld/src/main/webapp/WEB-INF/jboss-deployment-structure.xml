@@ -2,7 +2,9 @@
 <jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
 	<deployment>
 		<dependencies>
-			<module name="deployment.common-utils-1.0.jar" />
+			<!-- Deploy the dynamic module with a runtime-name of 'common-utils'
+			     so this file doesn't need to be updated when the version changes. -->
+			<module name="deployment.common-utils.jar" />
 		</dependencies>
 	</deployment>
 </jboss-deployment-structure>
