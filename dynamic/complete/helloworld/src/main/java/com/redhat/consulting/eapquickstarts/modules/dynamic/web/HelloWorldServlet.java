@@ -1,4 +1,4 @@
-package org.jboss.as.quickstarts.helloworld;
+package com.redhat.consulting.eapquickstarts.modules.dynamic.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;

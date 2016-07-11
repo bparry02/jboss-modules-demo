@@ -18,21 +18,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.jboss.quickstarts.eap</groupId>
-    <artifactId>jboss-helloworld</artifactId>
-    <version>6.3.0.GA</version>
+    <groupId>com.redhat.consulting.eapquickstarts.modules.dynamic</groupId>
+    <artifactId>dynamic-web</artifactId>
+    <version>1.0</version>
     <packaging>war</packaging>
-    <name>JBoss EAP Quickstart: helloworld</name>
-    <description>JBoss EAP Quickstart: Helloworld</description>
-
-    <url>http://jboss.org/jbossas</url>
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <distribution>repo</distribution>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-        </license>
-    </licenses>
+    <name>Red Hat Consulting EAP Quickstart: Dynamic Module Web</name>
 
     <properties>
         <!-- Explicitly declaring the source encoding eliminates the following 
@@ -77,18 +67,11 @@
     <dependencies>
 
 		<dependency>
-			<groupId>org.jboss.sample</groupId>
+			<groupId>com.redhat.consulting.eapquickstarts.modules.dynamic</groupId>
 			<artifactId>common-utils</artifactId>
 			<version>1.0</version>
 			<scope>provided</scope>
 		</dependency>
-
-        <!-- Import the CDI API, we use provided scope as the API is included in JBoss EAP 6 -->
-        <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- Import the Common Annotations API (JSR-250), we use provided scope 
             as the API is included in JBoss EAP 6 -->
