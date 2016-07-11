@@ -1,4 +1,4 @@
-package org.jboss.sample.common.utils;
+package com.redhat.consulting.eapquickstarts.modules.dynamic.utils;
 
 public class Util 
 {

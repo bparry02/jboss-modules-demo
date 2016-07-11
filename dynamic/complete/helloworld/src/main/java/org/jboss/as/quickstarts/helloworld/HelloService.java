@@ -16,7 +16,7 @@
  */
 package org.jboss.as.quickstarts.helloworld;
 
-import org.jboss.sample.common.utils.Util;
+import com.redhat.consulting.eapquickstarts.modules.dynamic.utils.Util;
 
 /**
  * A simple CDI service which is able to say hello to someone
