@@ -61,6 +61,7 @@
 
     <dependencies>
 
+        <!-- Set scope to provided. common-utils will be deployed as a dynamic module -->
         <dependency>
            <groupId>com.redhat.consulting.eapquickstarts.modules</groupId>
            <artifactId>dynamic-common-utils</artifactId>
