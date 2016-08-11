@@ -65,7 +65,6 @@
 		<dependency>
 			<groupId>com.redhat.consulting.eapquickstarts.modules</groupId>
 			<artifactId>dynamic-ear-common-utils</artifactId>
-			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
