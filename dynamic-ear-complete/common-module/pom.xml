@@ -2,18 +2,22 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.jboss.sample</groupId>
-	<artifactId>common-module</artifactId>
-	<version>1.0</version>
+	<parent>
+		<groupId>com.redhat.consulting.eapquickstarts.modules</groupId>
+		<artifactId>dynamic-ear</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>dynamic-ear-common-module</artifactId>
 	<packaging>ear</packaging>
 
-	<name>common-module</name>
+	<name>JBoss EAP Quickstart: dynamic-ear-common-module</name>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.jboss.sample</groupId>
-			<artifactId>common-utils</artifactId>
-			<version>1.0</version>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dynamic-ear-common-utils</artifactId>
+			<version>${project.version} </version>
 		</dependency>
 	</dependencies>
 
