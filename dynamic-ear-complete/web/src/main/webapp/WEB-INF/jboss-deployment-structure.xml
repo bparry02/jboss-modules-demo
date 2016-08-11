@@ -2,7 +2,9 @@
 <jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
 	<deployment>
 		<dependencies>
-			<module name="deployment.common-module.ear" />
+			<!-- Deploy the dynamic module with a runtime-name of 'dynamic-ear-common-module'
+			     so this file doesn't need to be updated when the version changes. -->
+			<module name="deployment.dynamic-ear-common-module.ear" />
 		</dependencies>
 	</deployment>
 </jboss-deployment-structure>
