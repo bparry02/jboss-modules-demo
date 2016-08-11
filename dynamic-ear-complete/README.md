@@ -63,7 +63,7 @@ Build and Deploy the Quickstart
 can depend on a consistent dynamic module name (as opposed to the EAR filename, which will
 include the version number by default).
 
-        deploy common-module/target/dynamic-ear-common-module.ear --runtime-name=dynamic-ear-common-module.ear
+        deploy common-module/target/dynamic-ear-common-module-1.0.0-SNAPSHOT.ear --runtime-name=dynamic-ear-common-module.ear
 
 6. Using the JBoss CLI, deploy the dynamic-web WAR.
 
@@ -88,4 +88,4 @@ Undeploy the application and dynamic module
 
 2. Using the JBoss CLI, undeploy the dynamic module with:
 
-        undeploy dynamic-ear-common-module.ear
+        undeploy dynamic-ear-common-module-1.0.0-SNAPSHOT.ear
