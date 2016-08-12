@@ -4,4 +4,5 @@ target
 .project
 Guardfile
 README.html
+.tern-project
 
